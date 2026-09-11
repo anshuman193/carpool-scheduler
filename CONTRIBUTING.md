@@ -5,7 +5,7 @@
 1. Install dependencies with `npm install`.
 2. Create a feature branch for your work.
 3. Keep changes focused and typed.
-4. Run `npm run build` before opening a pull request.
+4. Run `npm run test:run` and `npm run build` before opening a pull request.
 
 ## UI conventions
 

@@ -8,7 +8,11 @@
    ```bash
    npm run dev
    ```
-3. Build the production bundle:
+3. Run the test suite:
+   ```bash
+   npm run test:run
+   ```
+4. Build the production bundle:
    ```bash
    npm run build
    ```

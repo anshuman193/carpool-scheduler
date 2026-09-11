@@ -16,6 +16,7 @@ Carpool Scheduler is a production-ready React 18 + TypeScript + Tailwind CSS sta
 ```bash
 npm install
 npm run dev
+npm run test
 ```
 
 Additional documentation:
