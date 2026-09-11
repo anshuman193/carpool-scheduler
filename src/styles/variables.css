@@ -1,0 +1,24 @@
+:root {
+  color-scheme: light;
+  --color-brand: 37 99 235;
+  --color-success: 16 185 129;
+  --color-warning: 245 158 11;
+  --color-danger: 239 68 68;
+  --color-surface: 255 255 255;
+  --color-surface-alt: 248 250 252;
+  --color-border: 226 232 240;
+  --color-text: 15 23 42;
+  --color-muted: 100 116 139;
+  --color-canvas: 241 245 249;
+  --radius-xl: 1rem;
+}
+
+html.dark {
+  color-scheme: dark;
+  --color-surface: 15 23 42;
+  --color-surface-alt: 30 41 59;
+  --color-border: 51 65 85;
+  --color-text: 226 232 240;
+  --color-muted: 148 163 184;
+  --color-canvas: 2 6 23;
+}
