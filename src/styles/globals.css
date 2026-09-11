@@ -1,0 +1,35 @@
+@import './variables.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-canvas font-sans text-text antialiased;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  .surface-card {
+    @apply rounded-xl border border-border bg-surface shadow-soft;
+  }
+
+  .screen-container {
+    @apply mx-auto flex w-full max-w-7xl flex-1 flex-col gap-4 px-4 py-4 tablet:px-6 desktop:px-8;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+}
