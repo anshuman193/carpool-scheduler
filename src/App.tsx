@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode, useEffect, useMemo, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
+import { LoginScreen } from '@components/auth/LoginScreen'
 import { DesktopLayout } from '@components/layout/DesktopLayout'
 import { MobileLayout } from '@components/layout/MobileLayout'
 import { TabletLayout } from '@components/layout/TabletLayout'
@@ -128,9 +129,16 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const { isAuthenticated } = useAppSelector((state) => state.auth)
+  const { theme } = useAppSelector((state) => state.ui)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+  }, [theme])
+
   return (
     <ErrorBoundary>
-      <AppRoutes />
+      {isAuthenticated ? <AppRoutes /> : <LoginScreen />}
     </ErrorBoundary>
   )
 }

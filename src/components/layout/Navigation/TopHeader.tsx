@@ -1,6 +1,7 @@
 import type { Screen, ThemeMode } from '@types/index'
 import { APP_NAME, SCREEN_TITLES } from '@utils/constants'
 
+import { UserHeaderControl } from '@components/auth/UserHeaderControl'
 import { Button } from '@components/shared/Button'
 
 interface TopHeaderProps {
@@ -25,9 +26,12 @@ export function TopHeader({ activeScreen, onToggleSidebar, onToggleTheme, theme 
             <h1 className="text-xl font-semibold text-text">{SCREEN_TITLES[activeScreen]}</h1>
           </div>
         </div>
-        <Button variant="secondary" onClick={onToggleTheme}>
-          {theme === 'light' ? 'Dark mode' : 'Light mode'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <UserHeaderControl />
+          <Button variant="secondary" onClick={onToggleTheme}>
+            {theme === 'light' ? 'Dark mode' : 'Light mode'}
+          </Button>
+        </div>
       </div>
     </header>
   )
