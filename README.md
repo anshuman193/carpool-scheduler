@@ -22,5 +22,6 @@ npm run test
 Additional documentation:
 
 - [SETUP.md](./SETUP.md)
+- [GOOGLE_AUTH_SETUP.md](./GOOGLE_AUTH_SETUP.md)
 - [ARCHITECTURE.md](./ARCHITECTURE.md)
 - [CONTRIBUTING.md](./CONTRIBUTING.md)

@@ -1,12 +1,16 @@
 import { Badge } from '@components/shared/Badge'
 import { Button } from '@components/shared/Button'
 import { Card } from '@components/shared/Card'
+import { useAppSelector } from '@store/index'
 
 export function Home() {
+  const { user } = useAppSelector((state) => state.auth)
+  const greetingName = user ? user.givenName || user.name.split(' ')[0] : 'Driver'
+
   return (
     <div className="space-y-4">
       <Card
-        title="Good morning, Anshuman"
+        title={`Good morning, ${greetingName}`}
         subtitle="Today’s carpool status stays prominent across every screen size."
         actions={<Badge variant="success">Your turn</Badge>}
       >
