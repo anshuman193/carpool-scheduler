@@ -2,19 +2,12 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { createSlice } from '@reduxjs/toolkit'
 
 import type { AuthState, User } from '@types/index'
+import { isLoginRequiredEverySession } from '@utils/authEnv'
 
 const AUTH_STORAGE_KEY = 'carpool_auth_state'
 
-const shouldRequireLoginEverytime = (): boolean => {
-  const envVal = import.meta.env.VITE_REQUIRE_LOGIN_EVERYTIME
-  if (envVal === 'true') return true
-  if (envVal === 'false') return false
-  // Default behavior: require fresh login on start in development mode, persist in production
-  return import.meta.env.DEV
-}
-
 const loadSavedAuth = (): { user: User; token: string } | null => {
-  if (shouldRequireLoginEverytime()) {
+  if (isLoginRequiredEverySession()) {
     return null
   }
 

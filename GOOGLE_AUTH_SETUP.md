@@ -55,14 +55,37 @@ This guide walks you through setting up real Google Authentication credentials f
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
 VITE_GOOGLE_CLIENT_ID=your_client_id_here.apps.googleusercontent.com
+VITE_ENABLE_DEMO_LOGIN=true
 ```
 
 3. Save `.env` and restart the Vite development server (`npm run dev`).
 
 ---
 
-## 5. Local Development / Demo Mode
+## 5. Configure Vercel Domains in Google OAuth
 
-If `VITE_GOOGLE_CLIENT_ID` is left empty in `.env`:
+Before using Google sign-in on Vercel, update the same OAuth client with your deployed frontend URLs.
+
+1. Return to **Google Cloud Console → APIs & Services → Credentials**.
+2. Open your existing **Web application** OAuth client.
+3. Under **Authorized JavaScript origins**, add:
+   - Your production Vercel domain, for example `https://your-app.vercel.app`
+   - Your custom production domain, if you use one
+   - Any Vercel preview deployment URL you intend to test with Google sign-in
+4. Under **Authorized redirect URIs**, add the same deployed URLs:
+   - `https://your-app.vercel.app`
+   - Your custom production domain
+   - Any preview deployment URL you intend to test
+5. Save the OAuth client changes.
+
+> Google OAuth does not support a wildcard for all Vercel preview URLs, so each preview domain you use for sign-in testing must be added explicitly.
+
+---
+
+## 6. Local Development / Demo Mode
+
+If `VITE_GOOGLE_CLIENT_ID` is left empty in `.env` **and** `VITE_ENABLE_DEMO_LOGIN=true`:
 - The app automatically provides a **"Sign in with Demo Google Account"** option in the sign-in modal.
 - This allows you or new contributors to test authenticated UI screens without needing Google Cloud credentials.
+
+For production deployments, set `VITE_ENABLE_DEMO_LOGIN=false` unless you explicitly want to keep the demo login available.
