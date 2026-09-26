@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@store/index'
 import { setError, setLoading, setCredentials } from '@store/slices/authSlice'
 import { toggleTheme } from '@store/slices/uiSlice'
 import type { User } from '@types/index'
+import { isDemoLoginEnabled, isLoginRequiredEverySession } from '@utils/authEnv'
 import { APP_NAME } from '@utils/constants'
 
 interface GoogleDecodedToken {
@@ -19,9 +20,8 @@ interface GoogleDecodedToken {
 }
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
-const IS_DEV_LOGIN_EVERYTIME =
-  import.meta.env.VITE_REQUIRE_LOGIN_EVERYTIME === 'true' ||
-  (import.meta.env.DEV && import.meta.env.VITE_REQUIRE_LOGIN_EVERYTIME !== 'false')
+const IS_DEMO_LOGIN_ENABLED = isDemoLoginEnabled()
+const IS_DEV_LOGIN_EVERYTIME = isLoginRequiredEverySession()
 
 export function LoginScreen() {
   const dispatch = useAppDispatch()
@@ -109,23 +109,29 @@ export function LoginScreen() {
                   shape="rectangular"
                 />
               </div>
-            ) : (
+            ) : IS_DEMO_LOGIN_ENABLED ? (
               <div className="text-xs text-muted text-center italic mb-1">
                 (Google Client ID not set in environment. Use Demo Sign-In below)
               </div>
+            ) : (
+              <div className="rounded-lg border border-border bg-surface-alt p-3 text-center text-xs text-muted">
+                Google sign-in is unavailable until <code>VITE_GOOGLE_CLIENT_ID</code> is configured for this deployment.
+              </div>
             )}
 
-            <div className="w-full border-t border-border pt-4 text-center">
-              <p className="text-xs text-muted mb-3">Instant Local Development Login</p>
-              <Button
-                variant="primary"
-                onClick={handleMockLogin}
-                disabled={isLoading}
-                className="w-full justify-center"
-              >
-                {isLoading ? 'Signing in...' : 'Sign in with Google Demo Account'}
-              </Button>
-            </div>
+            {IS_DEMO_LOGIN_ENABLED && (
+              <div className="w-full border-t border-border pt-4 text-center">
+                <p className="text-xs text-muted mb-3">Instant Local Development Login</p>
+                <Button
+                  variant="primary"
+                  onClick={handleMockLogin}
+                  disabled={isLoading}
+                  className="w-full justify-center"
+                >
+                  {isLoading ? 'Signing in...' : 'Sign in with Google Demo Account'}
+                </Button>
+              </div>
+            )}
           </div>
         </Card>
 
