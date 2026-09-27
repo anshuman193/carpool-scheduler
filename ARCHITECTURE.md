@@ -7,6 +7,42 @@
 - **Redux Toolkit** for UI state such as screen selection, sidebar visibility, and theme
 - **React Router** for screen-level navigation
 
+## Backend stack (new)
+
+- **Node.js HTTP server** in `backend/` with versioned REST API at `/api/v1`
+- Server-side Google token verification + short-lived access and refresh sessions
+- In-memory module boundaries for Auth, Groups, Scheduling, Swaps, Chat, Notifications, Admin, and Reporting
+- Contract tests in `backend/tests/contracts.test.js`
+- Relational production schema draft in `backend/db/schema.sql`
+
+### Backend scope and SLA targets
+
+- Scope: login/session, groups/members, ride slots/assignments, swaps, chat, notifications, dashboard metrics
+- Availability target: `99.9%`
+- Latency targets: read p95 `<=200ms`, write p95 `<=350ms`
+- Audit retention target: `365 days`
+- Notification retention target: `180 days`
+
+### Core backend domain entities
+
+- Users, Families, Children
+- CarpoolGroups, GroupMemberships (RBAC)
+- RideSlots, Assignments, Schedule versions
+- SwapRequests (optimistic locking)
+- ChatThreads, ChatMessages
+- Notifications + delivery state
+- AuditLogs
+
+### API contract map
+
+- `POST /auth/google/verify`, `GET /auth/session`, `POST /auth/session/refresh`, `POST /auth/logout`
+- `GET/POST /groups`, `GET /groups/:id/members`
+- `GET /schedule`, `GET /rides`, `GET /assignments`, `POST /assignments/recompute`
+- `GET/POST /swaps`, `POST /swaps/:id/respond`
+- `GET /chat/threads`, `GET/POST /chat/messages`
+- `GET /notifications`, `GET /me/dashboard`
+- `GET /admin/moderation`, `GET /reports/analytics`, `GET /meta/sla`
+
 ## Folder structure
 
 - `src/components/layout`: mobile, tablet, and desktop shells plus adaptive navigation

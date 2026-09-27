@@ -1,6 +1,7 @@
 # Carpool Scheduler
 
 Carpool Scheduler is a production-ready React 18 + TypeScript + Tailwind CSS starter for a responsive family transportation planning app.
+It now includes a Node backend scaffold (`backend/`) with versioned API contracts for auth, groups, schedules, swaps, chat, notifications, and dashboard metrics.
 
 ## Included foundation
 
@@ -15,6 +16,7 @@ Carpool Scheduler is a production-ready React 18 + TypeScript + Tailwind CSS sta
 
 ```bash
 npm install
+npm run backend:dev
 npm run dev
 npm run test
 ```
@@ -28,7 +30,7 @@ This app is a Vite-built React SPA and can be deployed directly to Vercel as a s
 - SPA routing fallback is configured in [`vercel.json`](./vercel.json) so deep links like `/calendar` continue to work on refresh
 - Required environment variables:
   - `VITE_GOOGLE_CLIENT_ID`
-  - `VITE_API_BASE_URL`
+  - `VITE_API_BASE_URL` (for example `http://localhost:3000/api/v1`)
 - Optional environment variables:
   - `VITE_ENABLE_DEMO_LOGIN` (`false` recommended for production)
   - `VITE_REQUIRE_LOGIN_EVERYTIME`
