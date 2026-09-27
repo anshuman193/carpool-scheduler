@@ -6,6 +6,7 @@
    ```
 2. Start the development server:
    ```bash
+   npm run backend:dev
    npm run dev
    ```
 3. Run the test suite:
@@ -20,14 +21,14 @@
 ## Environment & Google Authentication
 
 Copy `.env.example` to `.env` and configure:
-- `VITE_API_BASE_URL` for your local or deployed API.
+- `VITE_API_BASE_URL` for your local or deployed API (local backend default: `http://localhost:3000/api/v1`).
 - `VITE_GOOGLE_CLIENT_ID` with your Web Application Client ID from the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
 - `VITE_ENABLE_DEMO_LOGIN` to control whether the local demo sign-in button is available. It defaults to enabled in development and disabled in production unless explicitly set.
 - `VITE_REQUIRE_LOGIN_EVERYTIME` to control whether auth should persist between sessions.
 
 For step-by-step instructions on setting up your Google OAuth Client ID, see [GOOGLE_AUTH_SETUP.md](./GOOGLE_AUTH_SETUP.md).
 
-*Note: If `VITE_GOOGLE_CLIENT_ID` is left blank, the app will only offer the Demo/Mock sign-in flow when `VITE_ENABLE_DEMO_LOGIN` is enabled.*
+*Note: If `VITE_GOOGLE_CLIENT_ID` is left blank, the app can still offer demo sign-in through the backend when `ALLOW_DEMO_ID_TOKEN=true` in `backend/.env`.*
 
 ## Deploying to Vercel
 
@@ -51,4 +52,4 @@ This repository includes [`vercel.json`](./vercel.json), which rewrites all unma
 
 ### Production readiness note
 
-The current Google authentication flow is handled entirely in the browser, and auth state is stored in localStorage when persistence is enabled. This is acceptable for demos and frontend prototyping, but a production system should verify Google tokens on a backend before treating the app as fully protected.
+The backend now verifies Google ID tokens on `POST /api/v1/auth/google/verify` and issues short-lived access tokens with refresh support; keep `ALLOW_DEMO_ID_TOKEN=false` for production.

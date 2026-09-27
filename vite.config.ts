@@ -16,11 +16,13 @@ export default defineConfig({
       '@utils': path.resolve(rootDir, './src/utils'),
       '@styles': path.resolve(rootDir, './src/styles'),
       '@store': path.resolve(rootDir, './src/store'),
+      '@services': path.resolve(rootDir, './src/services'),
     },
   },
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
     css: true,
+    exclude: ['backend/**', 'node_modules/**'],
   },
 })

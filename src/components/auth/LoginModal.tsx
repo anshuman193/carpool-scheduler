@@ -1,21 +1,11 @@
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
-import { jwtDecode } from 'jwt-decode'
 
 import { Button } from '@components/shared/Button'
 import { Card } from '@components/shared/Card'
 import { Modal } from '@components/shared/Modal'
+import { verifyGoogleIdToken } from '@services/authApi'
 import { useAppDispatch, useAppSelector } from '@store/index'
 import { setError, setLoading, setCredentials } from '@store/slices/authSlice'
-import type { User } from '@types/index'
-
-interface GoogleDecodedToken {
-  sub: string
-  name: string
-  email: string
-  picture?: string
-  given_name?: string
-  family_name?: string
-}
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
@@ -28,28 +18,25 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const dispatch = useAppDispatch()
   const { isLoading, error } = useAppSelector((state) => state.auth)
 
-  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    dispatch(setLoading(true))
+    if (!credentialResponse.credential) {
+      dispatch(setError('No Google credential returned'))
+      return
+    }
+
     try {
-      dispatch(setLoading(true))
-      if (!credentialResponse.credential) {
-        dispatch(setError('No Google credential returned'))
-        return
-      }
-
-      const decoded = jwtDecode<GoogleDecodedToken>(credentialResponse.credential)
-      const user: User = {
-        id: decoded.sub,
-        name: decoded.name || 'Google User',
-        email: decoded.email,
-        picture: decoded.picture,
-        givenName: decoded.given_name,
-        familyName: decoded.family_name,
-      }
-
-      dispatch(setCredentials({ user, token: credentialResponse.credential }))
+      const response = await verifyGoogleIdToken(credentialResponse.credential)
+      dispatch(
+        setCredentials({
+          user: response.user,
+          token: response.session.accessToken,
+          refreshToken: response.session.refreshToken,
+        }),
+      )
       if (onClose) onClose()
     } catch (err) {
-      console.error('Failed to decode Google token', err)
+      console.error('Failed to verify Google token with backend', err)
       dispatch(setError('Authentication failed. Please try again.'))
     }
   }
@@ -58,18 +45,22 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
     dispatch(setError('Google sign-in was unsuccessful. Please try again.'))
   }
 
-  const handleMockLogin = () => {
+  const handleDemoLogin = async () => {
     dispatch(setLoading(true))
-    const mockUser: User = {
-      id: 'google_mock_109283741',
-      name: 'Anshuman (Google Demo)',
-      email: 'anshuman.demo@gmail.com',
-      picture: 'https://lh3.googleusercontent.com/a/default-user',
-      givenName: 'Anshuman',
-      familyName: 'Demo',
+    try {
+      const response = await verifyGoogleIdToken('demo-google-token')
+      dispatch(
+        setCredentials({
+          user: response.user,
+          token: response.session.accessToken,
+          refreshToken: response.session.refreshToken,
+        }),
+      )
+      if (onClose) onClose()
+    } catch (err) {
+      console.error('Failed demo backend login', err)
+      dispatch(setError('Demo login failed. Configure backend demo token support.'))
     }
-    dispatch(setCredentials({ user: mockUser, token: 'mock_google_id_token_12345' }))
-    if (onClose) onClose()
   }
 
   return (
@@ -109,7 +100,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               <p className="text-xs text-muted mb-2">Want to try without a Google Client ID?</p>
               <Button
                 variant="secondary"
-                onClick={handleMockLogin}
+                onClick={handleDemoLogin}
                 disabled={isLoading}
               >
                 {isLoading ? 'Signing in...' : 'Sign in with Demo Google Account'}

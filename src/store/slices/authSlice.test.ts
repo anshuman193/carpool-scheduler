@@ -12,6 +12,7 @@ describe('authSlice', () => {
     const initialState = reducer(undefined, { type: 'unknown' })
     expect(initialState.user).toBeNull()
     expect(initialState.token).toBeNull()
+    expect(initialState.refreshToken).toBeNull()
     expect(initialState.isAuthenticated).toBe(false)
     expect(initialState.isLoading).toBe(false)
     expect(initialState.error).toBeNull()
@@ -25,11 +26,13 @@ describe('authSlice', () => {
       picture: 'https://example.com/avatar.jpg',
     }
     const token = 'mock-jwt-token'
+    const refreshToken = 'mock-refresh-token'
 
-    const state = reducer(undefined, setCredentials({ user, token }))
+    const state = reducer(undefined, setCredentials({ user, token, refreshToken }))
 
     expect(state.user).toEqual(user)
     expect(state.token).toBe(token)
+    expect(state.refreshToken).toBe(refreshToken)
     expect(state.isAuthenticated).toBe(true)
     expect(state.isLoading).toBe(false)
     expect(state.error).toBeNull()
@@ -42,13 +45,15 @@ describe('authSlice', () => {
       email: 'test@example.com',
     }
     const token = 'mock-jwt-token'
+    const refreshToken = 'mock-refresh-token'
 
-    let state = reducer(undefined, setCredentials({ user, token }))
+    let state = reducer(undefined, setCredentials({ user, token, refreshToken }))
     expect(state.isAuthenticated).toBe(true)
 
     state = reducer(state, logout())
     expect(state.user).toBeNull()
     expect(state.token).toBeNull()
+    expect(state.refreshToken).toBeNull()
     expect(state.isAuthenticated).toBe(false)
   })
 

@@ -6,7 +6,7 @@ import { isLoginRequiredEverySession } from '@utils/authEnv'
 
 const AUTH_STORAGE_KEY = 'carpool_auth_state'
 
-const loadSavedAuth = (): { user: User; token: string } | null => {
+const loadSavedAuth = (): { user: User; token: string; refreshToken?: string } | null => {
   if (isLoginRequiredEverySession()) {
     return null
   }
@@ -30,7 +30,8 @@ const savedAuth = typeof window !== 'undefined' ? loadSavedAuth() : null
 const initialState: AuthState = {
   user: savedAuth?.user || null,
   token: savedAuth?.token || null,
-  isAuthenticated: Boolean(savedAuth?.user),
+  refreshToken: savedAuth?.refreshToken || null,
+  isAuthenticated: Boolean(savedAuth?.token),
   isLoading: false,
   error: null,
 }
@@ -39,9 +40,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials(state, action: PayloadAction<{ user: User; token: string }>) {
+    setCredentials(state, action: PayloadAction<{ user: User; token: string; refreshToken?: string | null }>) {
       state.user = action.payload.user
       state.token = action.payload.token
+      state.refreshToken = action.payload.refreshToken ?? state.refreshToken
       state.isAuthenticated = true
       state.isLoading = false
       state.error = null
@@ -54,6 +56,7 @@ const authSlice = createSlice({
     logout(state) {
       state.user = null
       state.token = null
+      state.refreshToken = null
       state.isAuthenticated = false
       state.isLoading = false
       state.error = null

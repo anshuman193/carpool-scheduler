@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode, useEffect, useMemo, useState } from 'react'
+import { Component, type ErrorInfo, type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import { LoginScreen } from '@components/auth/LoginScreen'
@@ -12,6 +12,8 @@ import { Home } from '@components/screens/Home'
 import { Menu } from '@components/screens/Menu'
 import { Modal } from '@components/shared/Modal'
 import { useLayout } from '@hooks/useLayout'
+import { getSession, refreshSession } from '@services/authApi'
+import { logout, setCredentials, setError, setLoading } from '@store/slices/authSlice'
 import type { Screen } from '@types/index'
 import { useAppDispatch, useAppSelector } from './store'
 import { setCurrentScreen, setMobileMenuOpen, toggleSidebar, toggleTheme } from './store/slices/uiSlice'
@@ -129,12 +131,54 @@ function AppRoutes() {
 }
 
 export default function App() {
-  const { isAuthenticated } = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch()
+  const didBootstrapSession = useRef(false)
+  const { isAuthenticated, token, refreshToken } = useAppSelector((state) => state.auth)
   const { theme } = useAppSelector((state) => state.ui)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
+
+  useEffect(() => {
+    if (didBootstrapSession.current || !token) return
+    didBootstrapSession.current = true
+
+    const bootstrapSession = async () => {
+      dispatch(setLoading(true))
+      try {
+        const active = await getSession(token)
+        dispatch(
+          setCredentials({
+            user: active.user,
+            token: active.session.accessToken,
+            refreshToken: refreshToken ?? active.session.refreshToken ?? null,
+          }),
+        )
+      } catch {
+        if (!refreshToken) {
+          dispatch(logout())
+          return
+        }
+
+        try {
+          const refreshed = await refreshSession(refreshToken)
+          dispatch(
+            setCredentials({
+              user: refreshed.user,
+              token: refreshed.session.accessToken,
+              refreshToken: refreshed.session.refreshToken ?? refreshToken,
+            }),
+          )
+        } catch {
+          dispatch(logout())
+          dispatch(setError('Session expired. Please sign in again.'))
+        }
+      }
+    }
+
+    void bootstrapSession()
+  }, [dispatch, refreshToken, token])
 
   return (
     <ErrorBoundary>
